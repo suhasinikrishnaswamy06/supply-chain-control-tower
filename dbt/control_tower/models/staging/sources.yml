@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw operational extracts for the control tower
+    tables:
+      - name: orders
+      - name: shipments
+      - name: inventory_snapshots
+      - name: warehouse_events

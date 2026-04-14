@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+target/
+logs/
+dbt_packages/
+airflow/logs/
+airflow/.astro/

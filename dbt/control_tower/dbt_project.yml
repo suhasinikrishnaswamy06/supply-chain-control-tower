@@ -1,0 +1,17 @@
+name: control_tower
+version: 1.0.0
+config-version: 2
+
+profile: control_tower
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  control_tower:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

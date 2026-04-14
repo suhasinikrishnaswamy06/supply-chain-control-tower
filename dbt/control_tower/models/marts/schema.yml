@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: control_tower_daily
+    description: Daily operational KPI mart for the supply chain control tower
+    columns:
+      - name: warehouse_id
+        tests:
+          - not_null
+      - name: metric_date
+        tests:
+          - not_null
