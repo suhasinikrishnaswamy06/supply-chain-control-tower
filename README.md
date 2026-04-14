@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Supply Chain Control Tower
 
 `Supply Chain Control Tower` is a portfolio project that simulates a modern logistics analytics platform for operations teams. The goal is to unify shipment execution, inventory position, warehouse throughput, and service-level metrics into a decision-ready data model.
@@ -93,3 +94,6 @@ Good follow-up enhancements:
 - Add anomaly detection on delays and backlog
 - Add dashboard assets in Looker Studio or Streamlit
 - Add carrier- and lane-level drilldowns
+=======
+# supply-chain-control-tower
+>>>>>>> 6fcfc449a142bad78558602dd3f87e0d30077094
