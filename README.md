@@ -191,6 +191,32 @@ The next README improvement should be screenshots for:
 - Streamlit dashboard overview
 - a sample query result from `control_tower_executive_dashboard`
 
+## Screenshots
+
+### Airflow Pipeline
+
+Successful DAG run in Airflow Graph view:
+
+![Airflow DAG Success](docs/images/airflow-dag-success.png)
+
+### BigQuery Marts
+
+Curated marts available in the `control_tower_dev` dataset:
+
+![BigQuery Marts](docs/images/bigquery-marts.png)
+
+### dbt Validation
+
+Successful dbt build/test execution summary:
+
+![dbt Build Success](docs/images/dbt-build-success.png)
+
+### Streamlit Dashboard
+
+Operational dashboard built on top of the curated BigQuery marts:
+
+![Streamlit Dashboard](docs/images/streamlit-dashboard.png)
+
 ## Production Evolution
 
 If this were promoted beyond portfolio scope, the next steps would be:
