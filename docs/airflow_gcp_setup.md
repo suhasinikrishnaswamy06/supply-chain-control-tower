@@ -39,3 +39,7 @@ $env:DBT_PROFILES_DIR="C:\Users\suhas\.dbt"
 - Land files in dated partition paths
 - Add load audit logging and row-count validation
 - Add retry and alerting for ingestion failures
+
+## Windows Note
+
+For a full Airflow web UI on Windows, prefer the Docker Desktop setup in [airflow_docker_desktop_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_docker_desktop_setup.md:1) instead of native Airflow services.

@@ -141,6 +141,14 @@ Set these environment variables before running the DAG locally or in Composer:
 
 `GCS` can be added later as a landing layer once billing is enabled. The current version keeps the pipeline runnable in a low-cost local setup.
 
+## Airflow Runtime Options
+
+- Native Windows task testing: useful for `airflow tasks test` and local verification
+- Docker Desktop: recommended on Windows for the full Airflow UI and scheduler
+- Cloud Composer: recommended production-style deployment target
+
+Docker Desktop setup instructions are in [docs/airflow_docker_desktop_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_docker_desktop_setup.md:1).
+
 ## Design Decisions
 
 - `BigQuery` is used as both the raw landing and analytics warehouse to keep the local portfolio workflow simple while staying aligned to a real cloud pattern.

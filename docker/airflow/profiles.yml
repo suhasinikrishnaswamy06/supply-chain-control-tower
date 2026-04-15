@@ -1,0 +1,13 @@
+control_tower:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: control-tower-493404
+      dataset: control_tower_dev
+      threads: 4
+      keyfile: /opt/airflow/keys/dbt-control-tower-sa.json
+      location: US
+      priority: interactive
+      timeout_seconds: 300
