@@ -3,8 +3,80 @@ version: 2
 sources:
   - name: raw
     description: Raw operational extracts for the control tower
+    database: "{{ target.project }}"
+    schema: raw
     tables:
       - name: orders
+        description: Raw order line commitments from the order management layer
+        loaded_at_field: "timestamp(order_date)"
+        freshness:
+          warn_after: {count: 7, period: day}
+          error_after: {count: 30, period: day}
+        columns:
+          - name: order_id
+            data_tests:
+              - not_null
+              - unique
+          - name: warehouse_id
+            data_tests:
+              - not_null
+          - name: sku_id
+            data_tests:
+              - not_null
+          - name: order_qty
+            data_tests:
+              - not_null
       - name: shipments
+        description: Raw shipment execution records from the transportation layer
+        loaded_at_field: "timestamp(ship_date)"
+        freshness:
+          warn_after: {count: 7, period: day}
+          error_after: {count: 30, period: day}
+        columns:
+          - name: shipment_id
+            data_tests:
+              - not_null
+              - unique
+          - name: order_id
+            data_tests:
+              - not_null
+          - name: shipment_status
+            data_tests:
+              - not_null
+              - accepted_values:
+                  values: ['delivered', 'in_transit', 'delayed']
       - name: inventory_snapshots
+        description: Daily inventory snapshots by warehouse and SKU
+        loaded_at_field: "timestamp(snapshot_date)"
+        freshness:
+          warn_after: {count: 7, period: day}
+          error_after: {count: 30, period: day}
+        columns:
+          - name: warehouse_id
+            data_tests:
+              - not_null
+          - name: sku_id
+            data_tests:
+              - not_null
+          - name: snapshot_date
+            data_tests:
+              - not_null
       - name: warehouse_events
+        description: Warehouse operational event stream for pick execution
+        loaded_at_field: event_ts
+        freshness:
+          warn_after: {count: 7, period: day}
+          error_after: {count: 30, period: day}
+        columns:
+          - name: event_id
+            data_tests:
+              - not_null
+              - unique
+          - name: order_id
+            data_tests:
+              - not_null
+          - name: event_type
+            data_tests:
+              - not_null
+              - accepted_values:
+                  values: ['pick_started']

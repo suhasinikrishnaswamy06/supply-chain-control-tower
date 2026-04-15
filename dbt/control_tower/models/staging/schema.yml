@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: Standardized order commitments used by the control tower marts
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: order_date
+        data_tests:
+          - not_null
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: sku_id
+        data_tests:
+          - not_null
+      - name: order_qty
+        data_tests:
+          - not_null
+      - name: promised_date
+        data_tests:
+          - not_null
+
+  - name: stg_shipments
+    description: Standardized shipment execution records
+    columns:
+      - name: shipment_id
+        data_tests:
+          - not_null
+          - unique
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: carrier_name
+        data_tests:
+          - not_null
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: shipment_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'in_transit', 'delayed']
+      - name: ship_date
+        data_tests:
+          - not_null
+      - name: shipped_qty
+        data_tests:
+          - not_null
+
+  - name: stg_inventory_snapshots
+    description: Standardized inventory balance records by site and SKU
+    columns:
+      - name: snapshot_date
+        data_tests:
+          - not_null
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: sku_id
+        data_tests:
+          - not_null
+      - name: on_hand_qty
+        data_tests:
+          - not_null
+      - name: reorder_point
+        data_tests:
+          - not_null
+
+  - name: stg_warehouse_events
+    description: Standardized warehouse scan and task events
+    columns:
+      - name: event_id
+        data_tests:
+          - not_null
+          - unique
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: event_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['pick_started']
+      - name: event_ts
+        data_tests:
+          - not_null
+      - name: pick_sla_minutes
+        data_tests:
+          - not_null
+      - name: actual_pick_delay_minutes
+        data_tests:
+          - not_null

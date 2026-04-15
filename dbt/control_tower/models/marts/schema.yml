@@ -1,12 +1,99 @@
 version: 2
 
 models:
-  - name: control_tower_daily
-    description: Daily operational KPI mart for the supply chain control tower
+  - name: dim_warehouse
+    description: Warehouse dimension used for location-based slicing
     columns:
       - name: warehouse_id
-        tests:
+        data_tests:
+          - not_null
+          - unique
+  - name: dim_sku
+    description: SKU dimension derived from operational product identifiers
+    columns:
+      - name: sku_id
+        data_tests:
+          - not_null
+          - unique
+  - name: dim_carrier
+    description: Carrier dimension used for transportation performance analysis
+    columns:
+      - name: carrier_name
+        data_tests:
+          - not_null
+          - unique
+  - name: fct_otif_daily
+    description: Daily OTIF-style service metrics by warehouse
+    columns:
+      - name: warehouse_id
+        data_tests:
           - not_null
       - name: metric_date
-        tests:
+        data_tests:
+          - not_null
+  - name: fct_backlog_daily
+    description: Daily backlog metrics by warehouse
+    columns:
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
+          - not_null
+  - name: fct_inventory_risk_daily
+    description: Daily inventory risk metrics by warehouse
+    columns:
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
+          - not_null
+  - name: control_tower_executive_dashboard
+    description: Dashboard-ready wide KPI mart for the supply chain control tower
+    columns:
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
+          - not_null
+      - name: otif_rate
+        data_tests:
+          - not_null
+      - name: backlog_units
+        data_tests:
+          - not_null
+      - name: inventory_risk_rate
+        data_tests:
+          - not_null
+  - name: mart_warehouse_performance_daily
+    description: Warehouse-level performance mart with location attributes and operational KPIs
+    columns:
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
+          - not_null
+  - name: mart_carrier_performance_daily
+    description: Carrier-level transportation performance mart
+    columns:
+      - name: carrier_name
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
+          - not_null
+  - name: mart_sku_inventory_risk_daily
+    description: SKU-level inventory risk mart by warehouse
+    columns:
+      - name: warehouse_id
+        data_tests:
+          - not_null
+      - name: sku_id
+        data_tests:
+          - not_null
+      - name: metric_date
+        data_tests:
           - not_null
