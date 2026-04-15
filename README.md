@@ -1,14 +1,24 @@
 # Supply Chain Control Tower
 
-`Supply Chain Control Tower` is a portfolio project that simulates a modern logistics analytics platform for operations teams. The goal is to unify shipment execution, inventory position, warehouse throughput, and service-level metrics into a decision-ready data model.
+`Supply Chain Control Tower` is a portfolio project that simulates a modern logistics analytics platform for operations teams. It unifies shipment execution, inventory position, warehouse throughput, and service-level performance into a decision-ready analytics layer.
 
-This project is intentionally designed to feel like a production-minded data engineering repository, not a notebook demo. It uses:
+This project is intentionally designed to feel like a production-minded data engineering system, not a notebook demo. It combines:
 
-- `GCP` as the target cloud platform
+- `GCP / BigQuery` for warehousing
 - `Airflow` for orchestration
-- `dbt` for transformations and tests
-- `SQL` for dimensional and metric modeling
+- `dbt` for transformations, tests, and freshness checks
+- `SQL` for metric modeling
 - `Python` for synthetic data generation and ingestion utilities
+
+## What This Project Demonstrates
+
+This repository is meant to show more than tool familiarity. It demonstrates how a data engineer can:
+
+- design a domain-specific analytics product for supply chain operations
+- build a repeatable ingestion and transformation pipeline
+- separate orchestration, data modeling, and quality enforcement cleanly
+- model business-facing KPIs rather than just raw tables
+- move from local development to a Dockerized Airflow runtime
 
 ## Business Problem
 
@@ -19,25 +29,34 @@ Operations leaders often need a single place to answer questions like:
 - Where are we likely to stock out in the next few days?
 - Which carriers or lanes are underperforming?
 
-In many teams, those answers are spread across raw ERP, WMS, and TMS extracts. This project models a control tower layer that standardizes those signals into curated marts.
+In many teams, those answers are split across ERP, WMS, TMS, and spreadsheet workflows. This project models a control tower layer that standardizes those signals into curated marts for monitoring and analysis.
 
-## Scope
+## Current Scope
 
-The starter version of the project includes:
+The current version includes:
 
-- Synthetic logistics source data for orders, shipments, inventory snapshots, and warehouse events
-- A Python utility to generate realistic CSV source files
-- An Airflow DAG that automates `local file -> BigQuery raw -> dbt build`
-- A dbt project with staging and mart models
-- A dashboard-facing metrics layer for OTIF, backlog, and inventory risk
+- synthetic logistics source data for orders, shipments, inventory snapshots, and warehouse events
+- a Python utility to generate realistic CSV source files
+- an Airflow DAG that automates `local file -> BigQuery raw -> dbt build`
+- a dbt project with staging, fact, dimension, and dashboard-facing mart models
+- Windows-friendly Docker Desktop support for the Airflow UI and scheduler
+
+## Project Status
+
+This project has been validated end-to-end in the current environment:
+
+- `dbt run`, `dbt test`, and `dbt source freshness` pass
+- BigQuery raw and curated datasets are loaded successfully
+- Airflow tasks run successfully for dataset creation, raw loads, and `dbt build`
+- Docker Desktop Airflow UI is working on Windows
 
 ## Target Architecture
 
-See [docs/architecture.md](C:\Users\suhas\OneDrive\Documents\New project\docs\architecture.md:1) for a fuller walkthrough.
+See [docs/architecture.md](C:\Users\suhas\OneDrive\Documents\New project\docs\architecture.md:1) for the deeper walkthrough.
 
 High-level flow:
 
-1. Python generates or ingests raw operational data
+1. Python generates or ingests operational data
 2. Raw files land in a bronze-style layer
 3. Airflow orchestrates ingestion and transformations
 4. dbt builds staging, metrics, and curated dashboard marts
@@ -53,44 +72,26 @@ flowchart LR
     F --> G["BI / Control Tower Reporting"]
 ```
 
-## Why This Project Exists
+## Key Models
 
-This repository is meant to show more than tool familiarity. It demonstrates how a data engineer can take fragmented logistics signals and turn them into a decision-ready analytics product with:
+Core fact models:
 
-- clear source-to-mart lineage
-- orchestration and repeatability
-- data quality and freshness checks
-- domain-oriented KPI design
-- a path from local development to production deployment
+- `fct_otif_daily`
+- `fct_backlog_daily`
+- `fct_inventory_risk_daily`
 
-## Repository Layout
-
-- `airflow/`: orchestration assets
-- `data/raw/`: synthetic source files
-- `dbt/control_tower/`: dbt project
-- `docs/`: architecture and project notes
-- `src/`: Python utilities
-
-## Metrics Layer
-
-The dbt mart layer separates reusable business metrics from dashboard-facing output:
-
-- `fct_otif_daily`: OTIF-style shipment service metrics by warehouse
-- `fct_backlog_daily`: open-order backlog and unshipped unit metrics
-- `fct_inventory_risk_daily`: low-stock and reorder-risk metrics
-- `control_tower_executive_dashboard`: combined KPI mart for BI dashboards
-
-Additional marts support deeper operational slicing:
-
-- `mart_warehouse_performance_daily`
-- `mart_carrier_performance_daily`
-- `mart_sku_inventory_risk_daily`
-
-Supporting dimensions:
+Dimensions:
 
 - `dim_warehouse`
 - `dim_carrier`
 - `dim_sku`
+
+Dashboard and drilldown marts:
+
+- `control_tower_executive_dashboard`
+- `mart_warehouse_performance_daily`
+- `mart_carrier_performance_daily`
+- `mart_sku_inventory_risk_daily`
 
 ## KPIs Modeled
 
@@ -108,7 +109,30 @@ Supporting dimensions:
 - `inventory_risk_rate`
 - `warehouse_pick_delay_events`
 
-## Quick Start
+## Data Quality Coverage
+
+The dbt layer includes:
+
+- source freshness checks
+- not-null and uniqueness tests
+- accepted-value tests for operational statuses
+- relationship tests across orders, shipments, and warehouse events
+- custom singular tests for invalid dates, negative quantities, negative measures, and out-of-bounds rates
+
+This helps position the project as a reliability-conscious engineering system rather than just a reporting demo.
+
+## Repository Layout
+
+- `airflow/`: orchestration assets
+- `data/raw/`: synthetic source files
+- `dbt/control_tower/`: dbt project
+- `docker/`: Docker runtime assets for Airflow
+- `docs/`: architecture and setup notes
+- `src/`: Python utilities and ingestion logic
+
+## Running The Project
+
+### Local dbt / BigQuery Workflow
 
 1. Create a Python environment and install dependencies from `requirements.txt`
 2. Generate source data:
@@ -117,31 +141,13 @@ Supporting dimensions:
 python -m src.data.generate_sample_data
 ```
 
-3. Review the generated files in `data/raw/`
-4. Point your Airflow and dbt local setup at the generated data or your warehouse tables
-5. Run the DAG and build dbt models
-6. Query `control_tower_executive_dashboard` for dashboards or reporting
+3. Load raw data into BigQuery
+4. Run dbt models and tests
+5. Query `control_tower_executive_dashboard` for reporting
 
-## Airflow Ingestion Flow
+The local Airflow + BigQuery setup guide is in [docs/airflow_gcp_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_gcp_setup.md:1).
 
-The orchestration flow is designed to mirror a production-style landing pattern:
-
-1. Generate or refresh local sample CSVs
-2. Validate expected source files
-3. Ensure the BigQuery `raw` dataset exists
-4. Load local CSVs into BigQuery raw tables
-5. Run `dbt build` to refresh staging, marts, and tests
-
-Set these environment variables before running the DAG locally or in Composer:
-
-- `CONTROL_TOWER_GCP_PROJECT`
-- `CONTROL_TOWER_RAW_DATASET`
-- `CONTROL_TOWER_BQ_LOCATION`
-- `DBT_PROFILES_DIR`
-
-`GCS` can be added later as a landing layer once billing is enabled. The current version keeps the pipeline runnable in a low-cost local setup.
-
-## Airflow Runtime Options
+### Airflow Runtime Options
 
 - Native Windows task testing: useful for `airflow tasks test` and local verification
 - Docker Desktop: recommended on Windows for the full Airflow UI and scheduler
@@ -151,10 +157,20 @@ Docker Desktop setup instructions are in [docs/airflow_docker_desktop_setup.md](
 
 ## Design Decisions
 
-- `BigQuery` is used as both the raw landing and analytics warehouse to keep the local portfolio workflow simple while staying aligned to a real cloud pattern.
-- `dbt` owns transformation logic, tests, and metric-layer modeling so business logic stays versioned and reviewable.
+- `BigQuery` is used as both raw landing and analytics warehouse to keep the local workflow simple while staying aligned to a realistic cloud pattern.
+- `dbt` owns transformation logic, metric modeling, tests, and freshness checks so business logic stays versioned and reviewable.
 - `Airflow` is responsible for orchestration rather than transformation logic, which keeps the pipeline easier to maintain.
-- Synthetic data is used so the project stays portable and safe to share publicly while still reflecting realistic logistics workflows.
+- synthetic data keeps the project portable and public-shareable while still reflecting realistic logistics workflows.
+- `GCS` is intentionally deferred for now so the project remains runnable in a lower-cost setup; the architecture still leaves room to add it later.
+
+## Suggested Screenshots To Add
+
+The next README improvement should be screenshots for:
+
+- Airflow DAG Graph view showing a successful run
+- BigQuery raw dataset and curated mart tables
+- dbt test or freshness success output
+- a sample query result from `control_tower_executive_dashboard`
 
 ## Production Evolution
 
@@ -166,21 +182,19 @@ If this were promoted beyond portfolio scope, the next steps would be:
 - run orchestration in `Cloud Composer`
 - add dashboarding in `Looker Studio` or `Streamlit`
 
-## Portfolio Positioning
+## Why It Matters For My Portfolio
 
-This project is meant to demonstrate:
+This project is designed to show:
 
-- Strong logistics and supply chain domain context
-- Data platform design thinking
-- Production-style orchestration and transformation structure
-- Business-facing metric design
-- Clear repo organization and documentation
+- strong logistics and supply chain domain context
+- data platform design thinking
+- production-style orchestration and transformation structure
+- business-facing metric design
+- clear repo organization and documentation
 
-## Next Steps
+## Next Enhancements
 
-Good follow-up enhancements:
-
-- Add anomaly detection on delays and backlog
-- Add dashboard assets in Looker Studio or Streamlit
-- Add carrier- and lane-level drilldowns
-- Add forecasting or exception-based alerting
+- add a dashboard in `Looker Studio` or `Streamlit`
+- include screenshots and sample outputs in this README
+- add anomaly detection on delays and backlog
+- add forecasting or exception-based alerting
