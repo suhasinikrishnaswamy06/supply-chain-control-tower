@@ -147,6 +147,24 @@ python -m src.data.generate_sample_data
 
 The local Airflow + BigQuery setup guide is in [docs/airflow_gcp_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_gcp_setup.md:1).
 
+### Streamlit Dashboard
+
+Run the dashboard locally with:
+
+```powershell
+Copy-Item .env.streamlit.example .env.streamlit
+streamlit run src/dashboard/streamlit_app.py
+```
+
+The dashboard reads from the curated BigQuery marts and provides:
+
+- executive KPI overview
+- warehouse performance view
+- carrier performance view
+- SKU inventory risk view
+
+Setup details are in [docs/streamlit_dashboard_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\streamlit_dashboard_setup.md:1).
+
 ### Airflow Runtime Options
 
 - Native Windows task testing: useful for `airflow tasks test` and local verification
@@ -170,6 +188,7 @@ The next README improvement should be screenshots for:
 - Airflow DAG Graph view showing a successful run
 - BigQuery raw dataset and curated mart tables
 - dbt test or freshness success output
+- Streamlit dashboard overview
 - a sample query result from `control_tower_executive_dashboard`
 
 ## Production Evolution
@@ -194,7 +213,6 @@ This project is designed to show:
 
 ## Next Enhancements
 
-- add a dashboard in `Looker Studio` or `Streamlit`
 - include screenshots and sample outputs in this README
 - add anomaly detection on delays and backlog
 - add forecasting or exception-based alerting
