@@ -5,10 +5,12 @@
 This project is intentionally designed to feel like a production-minded data engineering system, not a notebook demo. It combines:
 
 - `GCP / BigQuery` for warehousing
-- `Airflow` for orchestration
+- `Airflow` for orchestration  
 - `dbt` for transformations, tests, and freshness checks
 - `SQL` for metric modeling
 - `Python` for synthetic data generation and ingestion utilities
+- `Docker` for local airflow runtime
+- `Streamlit` for dashboard layer
 
 ## What This Project Demonstrates
 
@@ -52,8 +54,6 @@ This project has been validated end-to-end in the current environment:
 
 ## Target Architecture
 
-See [docs/architecture.md](C:\Users\suhas\OneDrive\Documents\New project\docs\architecture.md:1) for the deeper walkthrough.
-
 High-level flow:
 
 1. Python generates or ingests operational data
@@ -74,20 +74,17 @@ flowchart LR
 
 ## Key Models
 
-Core fact models:
-
+Fact Tables:
 - `fct_otif_daily`
 - `fct_backlog_daily`
 - `fct_inventory_risk_daily`
 
-Dimensions:
-
+Dimensions= Tables:
 - `dim_warehouse`
 - `dim_carrier`
 - `dim_sku`
 
 Dashboard and drilldown marts:
-
 - `control_tower_executive_dashboard`
 - `mart_warehouse_performance_daily`
 - `mart_carrier_performance_daily`
@@ -95,18 +92,25 @@ Dashboard and drilldown marts:
 
 ## KPIs Modeled
 
+Service level
 - `delivered_shipments`
 - `on_time_shipments`
 - `late_shipments`
 - `on_time_rate`
 - `in_full_rate`
 - `otif_rate`
+  
+Backlog
 - `backlog_orders`
 - `backlog_units`
 - `backlog_rate`
+  
+Inventory risk
 - `inventory_at_risk_units`
 - `inventory_below_reorder_sku_count`
 - `inventory_risk_rate`
+  
+Warehouse performance
 - `warehouse_pick_delay_events`
 
 ## Data Quality Coverage
@@ -145,7 +149,6 @@ python -m src.data.generate_sample_data
 4. Run dbt models and tests
 5. Query `control_tower_executive_dashboard` for reporting
 
-The local Airflow + BigQuery setup guide is in [docs/airflow_gcp_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_gcp_setup.md:1).
 
 ### Streamlit Dashboard
 
@@ -163,15 +166,12 @@ The dashboard reads from the curated BigQuery marts and provides:
 - carrier performance view
 - SKU inventory risk view
 
-Setup details are in [docs/streamlit_dashboard_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\streamlit_dashboard_setup.md:1).
-
 ### Airflow Runtime Options
 
 - Native Windows task testing: useful for `airflow tasks test` and local verification
 - Docker Desktop: recommended on Windows for the full Airflow UI and scheduler
 - Cloud Composer: recommended production-style deployment target
 
-Docker Desktop setup instructions are in [docs/airflow_docker_desktop_setup.md](C:\Users\suhas\OneDrive\Documents\New project\docs\airflow_docker_desktop_setup.md:1).
 
 ## Design Decisions
 
@@ -181,15 +181,6 @@ Docker Desktop setup instructions are in [docs/airflow_docker_desktop_setup.md](
 - synthetic data keeps the project portable and public-shareable while still reflecting realistic logistics workflows.
 - `GCS` is intentionally deferred for now so the project remains runnable in a lower-cost setup; the architecture still leaves room to add it later.
 
-## Suggested Screenshots To Add
-
-The next README improvement should be screenshots for:
-
-- Airflow DAG Graph view showing a successful run
-- BigQuery raw dataset and curated mart tables
-- dbt test or freshness success output
-- Streamlit dashboard overview
-- a sample query result from `control_tower_executive_dashboard`
 
 ## Screenshots
 
@@ -224,6 +215,7 @@ If this were promoted beyond portfolio scope, the next steps would be:
 - add `GCS` as a true landing zone
 - partition raw and curated tables by date
 - add alerting, lineage metadata, and row-count audit checks
+- add anomaly detection on delays and backlog
 - run orchestration in `Cloud Composer`
 - add dashboarding in `Looker Studio` or `Streamlit`
 
@@ -236,9 +228,3 @@ This project is designed to show:
 - production-style orchestration and transformation structure
 - business-facing metric design
 - clear repo organization and documentation
-
-## Next Enhancements
-
-- include screenshots and sample outputs in this README
-- add anomaly detection on delays and backlog
-- add forecasting or exception-based alerting
