@@ -79,7 +79,7 @@ Fact Tables:
 - `fct_backlog_daily`
 - `fct_inventory_risk_daily`
 
-Dimensions= Tables:
+Dimension Tables:
 - `dim_warehouse`
 - `dim_carrier`
 - `dim_sku`
